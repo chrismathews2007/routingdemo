@@ -58,7 +58,13 @@
     $json_data = '{
         "data":{
             "shifts":[
-                
+                {"dow":"MON","availability":{"start_time":"11:00","duration":"6"}},
+                {"dow":"TUE","availability":{"start_time":"09:00","duration":"8"}},
+                {"dow":"WED","availability":{"start_time":"11:00","duration":"3"}},
+                {"dow":"THU","availability":{"start_time":"06:00","duration":"8"}},
+                {"dow":"FRI","availability":{"start_time":"11:00","duration":"3"}},
+                {"dow":"SAT","availability":{"start_time":"08:00","duration":"9"}},
+                {"dow":"SUN","availability":{"start_time":"00:00","duration":"0"}}
                ]
         }
     }';
@@ -104,20 +110,15 @@
     }
 
     function constructPayload($selectedHours)
-{
-    $payload = [
-        "tech_obj_guid" => "fc9e77f7-7d65-2866-840a-a1963ed0fdae",
-        "shifts" => [],
-        "action" => "Crew::modify_doli_tech_shift",
-        "SID" => "81c2980a74f4871263c330befebd458f"
-    ];
+    {
+        $payload = [
+            "tech_obj_guid" => "fc9e77f7-7d65-2866-840a-a1963ed0fdae",
+                "shifts" => [],
+            "action" => "Crew::modify_doli_tech_shift",
+            "SID" => "81c2980a74f4871263c330befebd458f"
+        ];
 
-    $daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-
-    foreach ($daysOfWeek as $dow) {
-        // Check if the day is in the selected hours array
-        if (isset($selectedHours[$dow])) {
-            $hours = $selectedHours[$dow];
+        foreach ($selectedHours as $dow => $hours) {
             $startTime = reset($hours);
             $payload["shifts"][] = [
                 "dow" => $dow,
@@ -126,20 +127,10 @@
                     "duration" => count($hours)
                 ]
             ];
-        } else {
-            // If the day is not selected, add an entry with empty availability
-            $payload["shifts"][] = [
-                "dow" => $dow,
-                "availability" => [
-                    "start_time" => "00:00",
-                    "duration" => 0
-                ]
-            ];
         }
-    }
 
-    return $payload;
-}
+        return $payload;
+    }
 
     if (isset($_POST['update'])) {
         $payload = constructPayload($selectedHours);
@@ -154,8 +145,7 @@
                 <h3>Technician Recurring Weekly Shift</h3>
                 <div class="ml-3">
                     <button class="btn btn-primary" type="button" name="edit" onclick="toggleButtons()">Edit</button>
-                    <button class="btn btn-success" type="button" name="update" onclick="updateShifts()"
-                        style="display: none;">Update</button>
+                    <button class="btn btn-success" type="submit" name="update" style="display: none;">Update</button>
                 </div>
             </div>
             <table border="0" class="styled-table shifttable">
@@ -209,9 +199,6 @@
         </form>
     </div>
     <script>
-    const payload = <?= json_encode(constructPayload($selectedHours)); ?>;
-    console.log("PayloadLLL: ", payload)
-
     function updateTotalHoursOnLoad() {
         var selects = document.querySelectorAll('select[multiple]');
         var totalWeeklyHoursInput = document.querySelector('input[name="total_weekly_hours"]');
@@ -254,12 +241,8 @@
         }
     }
 
-    function updateShifts() {
-        // Call the PHP function to construct the payload
-        <?php
-            echo 'var payload = ' . json_encode(constructPayload($selectedHours)) . ';';
-            ?>
-        console.log("payload UPDATE 265: ", payload);
+    function showSuccessAlert() {
+        alert("Timings successfully updated!");
     }
     // Call the function when the page is loaded
     window.addEventListener('DOMContentLoaded', function() {
