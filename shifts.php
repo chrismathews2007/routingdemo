@@ -209,6 +209,9 @@
         </form>
     </div>
     <script>
+    const payload = <?= json_encode(constructPayload($selectedHours)); ?>;
+    console.log("PayloadLLL: ", payload)
+
     function updateTotalHoursOnLoad() {
         var selects = document.querySelectorAll('select[multiple]');
         var totalWeeklyHoursInput = document.querySelector('input[name="total_weekly_hours"]');
@@ -256,7 +259,7 @@
         <?php
             echo 'var payload = ' . json_encode(constructPayload($selectedHours)) . ';';
             ?>
-        console.log("payload: ", payload);
+        console.log("payload UPDATE 265: ", payload);
     }
     // Call the function when the page is loaded
     window.addEventListener('DOMContentLoaded', function() {
