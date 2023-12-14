@@ -58,13 +58,7 @@
     $json_data = '{
         "data":{
             "shifts":[
-                {"dow":"MON","availability":{"start_time":"11:00","duration":"6"}},
-                {"dow":"TUE","availability":{"start_time":"09:00","duration":"8"}},
-                {"dow":"WED","availability":{"start_time":"11:00","duration":"3"}},
-                {"dow":"THU","availability":{"start_time":"06:00","duration":"8"}},
-                {"dow":"FRI","availability":{"start_time":"11:00","duration":"3"}},
-                {"dow":"SAT","availability":{"start_time":"08:00","duration":"9"}},
-                {"dow":"SUN","availability":{"start_time":"00:00","duration":"0"}}
+                
                ]
         }
     }';
@@ -145,7 +139,7 @@
                 <h3>Technician Recurring Weekly Shift</h3>
                 <div class="ml-3">
                     <button class="btn btn-primary" type="button" name="edit" onclick="toggleButtons()">Edit</button>
-                    <button class="btn btn-success" type="submit" name="update" style="display: none;">Update</button>
+                    <button class="btn btn-success" type="submit" name="update" style="display: none;" onclick="onClickUpdate(event)">Update</button>
                 </div>
             </div>
             <table border="0" class="styled-table shifttable">
@@ -244,6 +238,34 @@
     function showSuccessAlert() {
         alert("Timings successfully updated!");
     }
+
+    function updateLog() {
+    var selects = document.querySelectorAll('select[multiple]');
+    var payload = { shifts: [] };
+
+    selects.forEach(function(select) {
+        var dow = select.getAttribute('name').match(/\[(.*?)\]/)[1];
+        var selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
+        
+        payload.shifts.push({
+            dow: dow,
+            availability: {
+                start_time: selectedOptions.length > 0 ? selectedOptions[0] : '00:00',
+                duration: selectedOptions.length
+            }
+        });
+    });
+
+    console.log('Update Log:', payload);
+    // Add any additional logic to send the payload to the server or perform other actions.
+}
+
+// Add this function to the "onclick" attribute of the "Update" button
+function onClickUpdate(event) {
+    event.preventDefault();
+    updateLog();
+    //showSuccessAlert(); // You can customize this function to display a success message or perform other actions.
+}
     // Call the function when the page is loaded
     window.addEventListener('DOMContentLoaded', function() {
         updateTotalHoursOnLoad();
